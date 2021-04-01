@@ -15,6 +15,12 @@
           company: "Spruce Systems, Inc.",
           companyURL: "https://spruceid.com",
         },
+        {
+          name: "Wayne Chang",
+          url: "https://www.linkedin.com/in/waynebuilds",
+          company: "Spruce Systems, Inc.",
+          companyURL: "https://spruceid.com",
+        }
       ],
       processVersion: 2020,
       edDraftURI: "https://github.com/spruceid/did-method-did",
@@ -167,7 +173,17 @@ did-did     = "did:" did
 
   <section>
     <h2>Reference Implementations</h2>
-    <p>No known implementations.</p>
+    <p> The following is an example implementation of <code>did:did</code> in the
+        <a href="https://www.jsoftware.com/#/README">J programming language</a> to
+        resolve <code>did:did:did:example:123</code> to
+        <code>did:example:123</code> in <code>O(n) + C</code> runtime where
+        <code>n</code> is the number of resolutions:</p>
+    <pre class="example" title="Example did:did implementation in J">
+j=: #@[ }. <@[ ;@,. ]
+s=: #@[ }.each [ (E. <;.1 ]) ,
+':' j 'did' ; (< 'did') (~: # ]) (':' s 'did:did:did:example:123')    
+    </pre>
+    <p> At this point, DID resolution proceeds as per the DID's method.</p>
   </section>
 
   <section>
