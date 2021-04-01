@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>DID Identity DID Method Specification</title>
+  <script
+   src='https://www.w3.org/Tools/respec/respec-w3c'
+   class='remove'></script>
+  <script class='remove'>
+    const respecConfig = {
+      specStatus: "unofficial",
+      editors: [{
+          name: "Charles E. Lehner",
+          url: "https://celehner.com",
+          company: "Spruce Systems, Inc.",
+          companyURL: "https://spruceid.com",
+        },
+      ],
+      processVersion: 2020,
+      edDraftURI: "https://github.com/spruceid/did-method-did",
+      publishDate: "2021-04-01",
+      shortName: "did-method-did"
+    };
+  </script>
+</head>
+<body>
+  <section id='abstract'>
+    <p> This specification defines the DID Identity DID (DID) DID method, <code>did:did</code>.  that supports DIDs
+        based on any other DID method.</p>
+  </section>
+  <section id='sotd'></section>
+  <!-- introduction -->
+  <section class='informative'> <!-- h2 -->
+  <h2>Introduction</h2>
+  <p><code>did:did</code> is a DID method that enables using any valid Decentralized Identifier (DID) as a <code>did:did</code> DID.</p>
+
+  <section id="conformance">
+<!-- This section is filled automatically by ReSpec. -->
+  </section>
+
+  <section>
+  <h2>Core Concepts</h2>
+  <section id="scheme">
+  <h3>DID Identity DID Scheme</h3>
+  <p> The namestring that shall identify this DID method is: <code>did</code>.
+      A DID that uses this method MUST begin with the prefix
+      <code>did:did</code>. As per the DID specification, this string MUST be
+      in lowercase.</p>
+  <p> The full DID Identity DID scheme is defined by the following
+  <a href="https://tools.ietf.org/html/std68">ABNF</a>, based on <a href="https://www.w3.org/TR/did-core/#did-syntax">DID Syntax</a>:</p>
+  <pre class="nohighlight">
+did-did     = "did:" did
+  </pre>
+  <p>Example DID Identity DID: <code>did:did:example:1234</code>.</p>
+  </section>
+  </section>
+
+  <section id="operations">
+    <h2>Operations</h2>
+
+    <section id="authorization">
+    <h3>Authorization</h3>
+    <p>Any authorization valid for the DID Controller (the unprefixed DID) SHOULD be accepted as valid for its corresponding <code>did:did</code> DID.</p>
+    </section>
+
+    <section id="create-registry">
+    <h3>Create (Register)</h3>
+    <p>A DID Identity DID may be created by appending the prefix <code>did:</code> to any existing DID.</p>
+    </section>
+
+    <section id="read-resolve">
+    <h3>Read (Resolve)</h3>
+    <p>To resolve a did:did DID, the following steps MUST be followed:</p>
+    <ol>
+      <li>Remove the "did:" prefix to obtain the <em>unprefixed DID</em>.</li>
+      <li>Construct a DID document with the <a href="https://www.w3.org/TR/did-core/#dfn-controller"><code>controller</code></a> property set to the <em>unprefixed DID</em>.</li>
+      <li>Return the resulting DID document.</li>
+    </ol>
+
+    <pre class="example" title="Example did:did DID document">
+{
+  "@context": ["https://www.w3.org/ns/did/v1"],
+  "id": "did:did:example:1234",
+  "controller": "did:example:1234"
+}
+    </pre>
+    </section>
+
+    <section id="update-replace">
+    <h3>Update (Replace)</h3>
+    <p>As a did:did DID is purely generative, there is no Update operation.</p>
+    </section>
+
+    <section id="delete-revoke">
+    <h3>Delete (Revoke)</h3>
+    <p>As a did:did DID is purely generative, there is no Delete operation.</p>
+    </section>
+  </section>
+
+  <section id="security-privacy">
+    <h2>Security & Privacy</h2>
+
+    <section id="security">
+    <h3>Security Considerations</h3>
+    <p>Security considerations for the unprefixed DID method apply to any use of the <code>did:did</code> DID method, including regarding forms of attack such as eavesdropping, replay, message insertion, deletion, modification, denial of service, storage or network amplification, and man-in-the-middle.</p>
+    <p>A full list of requirements for this section may be found at
+        <a href="https://www.w3.org/TR/did-core/#security-requirements">
+          W3C Decentralized Identifiers 7.3</a></p>
+
+      <section id="denial-of-service">
+      <h4>Denial of Service</h4>
+      <p>Implementations must take care to avoid unbounded stack growth through repeated prefixing of "did:" in input DIDs. Implementations may set a maximum dID length or "did:" nesting level for this purpose.</p>
+      <p>If some DID methods have a high resource burden, use of <code>did:did</code> with those DID methods inherits that characteristic.</p>
+      </section>
+
+      <section id="residual-risks">
+      <h4>Residual risks</h4>
+      <p>A <code>did:did</code> inherits any residual risks associated with its underlying DID.</p>
+      </section>
+
+      <section id="misattribution">
+      <h4>Misattribution</h4>
+      <p>User and applications should distinguish between a <code>did:did</code>and its corresponding unprefixed DID, but understand that the unprefixed DID is the <a href="https://www.w3.org/TR/did-core/#dfn-controller">controller</a> of the <code>did:did</code>DID.</p>
+      </section>
+
+    <section id="uniqueness">
+    <h3>Uniqueness of assignment</h3>
+    <p>Unique assignment of DIDs using <code>did:did</code> depends on the underlying unprefixed DID methods. Additional <code>did:did</code> DIDs may be generated by appending successive "did:" prefixes to a DID.</p>
+    </section>
+
+    </section>
+
+    <section id="chaining">
+    <h3>Chaining</h3>
+    <p><code>did:did</code> may be used with an existing <code>did:did</code> DID, with arbitrary levels of nesting. Each DID document has as its controller the DID obtained by removing a single "did:" prefix, forming a chain back to the non-<code>did:did</code> DID. The <a href="https://www.w3.org/TR/did-core/#did-controller">DID controller</a> relationship is considered to be transitive for this purpose.</code></p>
+    </section>
+
+    <section id="endpoint-authentication">
+    <h3>Method-specific endpoint authentication</h3>
+    <p><code>did:did</code> has no method-specific endpoints.</p>
+    </section>
+
+    <section id="signatures-on-document">
+    <h3>Signatures on DID Documents</h3>
+    <code>did:did</code> DID documents are resolved deterministically from the DID, and so do not rely on a signature on the document.</h3>
+    </section>
+
+    <section>
+    <h3>Privacy Considerations</h3>
+    <p><code>did:did</code> offers no privacy guarantees other than those of the underlying DID methods.</p>
+    <p> A full list of requirements for this section may be found at
+        <a href="https://www.w3.org/TR/did-core/#privacy-requirements">
+          W3C Decentralized Identifiers 7.4</a></p>
+
+      <section id="correlation">
+        <h4>Correlation</h4>
+        <p>A did:did DID is trivially correlated with its underlying DID.</p>
+      </section>
+
+    </section>
+  </section>
+
+  <section id="did-urls">
+    <h2>DID URLs</h2>
+    <p>A <code>did:did</code> DID supports <a href="https://www.w3.org/TR/did-core/#did-url-syntax">DID URLs</a> if the underlying DID method does, including use of <a href="https://www.w3.org/TR/did-core/#path">paths</a>. A DID URL based on a <code>did:did</code> may be dereferenced by dereferncing the underlying DID.</p>
+  </section>
+
+  <section>
+    <h2>Reference Implementations</h2>
+    <p>No known implementations.</p>
+  </section>
+
+  <section>
+    <h2>Resources</h2>
+    <ul>
+      <li><a href="https://www.w3.org/TR/did-core/">Decentralized Identifiers (DIDs)</a></li>
+      <li><a href="https://www.w3.org/TR/did-spec-registries/">DID Specification Registries</a></li>
+      <li><a href="https://w3c.github.io/did-rubric/">DID Method Rubric</a></li>
+    </ul>
+  </section>
+
+  </section>
+  </body>
+</html>
